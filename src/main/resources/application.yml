@@ -1,0 +1,16 @@
+server:
+  port: 8888
+spring:
+  sql:
+    init:
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: bank
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?ApplicationName=bank
+    username: bankUser
+    password: bankPassword
