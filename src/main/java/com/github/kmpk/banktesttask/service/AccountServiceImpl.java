@@ -22,15 +22,20 @@ public class AccountServiceImpl implements AccountService {
     @Scheduled(fixedRate = 1, timeUnit = TimeUnit.MINUTES)
     public void interestDeposit() {
         log.info("depositing interest for all accounts");
-        repository.depositInterestsForAllUsers(new BigDecimal("1.05"), new BigDecimal("2.07"));
+        repository.depositInterestsForAllUsers(new BigDecimal("1.05"), new BigDecimal("2.07")); //TODO: extract
     }
 
     @Override
     public void transfer(int fromId, int toId, BigDecimal amount) {
         if (!repository.existsById(toId)) {
-            throw new AppException("recipient account does not exist");
+            throw new AppException("Recipient account does not exist");
         }
-        repository.substract(fromId, amount);
-        repository.add(toId, amount);
+        if (fromId < toId) {
+            repository.substract(fromId, amount);
+            repository.add(toId, amount);
+        } else {
+            repository.add(toId, amount);
+            repository.substract(fromId, amount);
+        }
     }
 }
