@@ -1,0 +1,26 @@
+services:
+  bank:
+    build: .
+    ports:
+      - '8888:8888'
+    container_name: bank
+    environment:
+      spring.datasource.url: jdbc:postgresql://postgres:5432/postgres?ApplicationName=bank
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: bankUser
+      POSTGRES_PASSWORD: bankPassword
+      POSTGRES_SCHEMA: bank
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
+    external: false
