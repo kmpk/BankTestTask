@@ -1,5 +1,6 @@
 package com.github.kmpk.banktesttask.service;
 
+import com.github.kmpk.banktesttask.exception.AppException;
 import com.github.kmpk.banktesttask.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void transfer(int fromId, int toId, BigDecimal amount) {
-
+        if (!repository.existsById(toId)) {
+            throw new AppException("recipient account does not exist");
+        }
+        repository.substract(fromId, amount);
+        repository.add(toId, amount);
     }
 }

@@ -19,4 +19,20 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
             """)
     @Modifying
     void depositInterestsForAllUsers(BigDecimal interest, BigDecimal interestFloor);
+
+    @Query("""
+            UPDATE Account u
+            SET u.balance = u.balance - ?2
+            WHERE u.id = ?1
+            """)
+    @Modifying
+    void substract(int fromId, BigDecimal amount);
+
+    @Query("""
+            UPDATE Account u
+            SET u.balance = u.balance + ?2
+            WHERE u.id = ?1
+            """)
+    @Modifying
+    void add(int toId, BigDecimal amount);
 }
