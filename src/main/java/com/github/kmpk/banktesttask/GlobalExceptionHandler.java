@@ -16,9 +16,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
@@ -43,7 +40,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> dataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
         log.error("DataIntegrityViolationException: {}", ex.getMessage());
         if (ex.getMessage().contains("balance_constraint")) {
-            return createCustomDataIntegrityViolationResponse(ex, request, "address", "Can't perform operation: insufficient funds");
+            return createCustomDataIntegrityViolationResponse(ex, request, "Can't perform operation: insufficient funds");
+        }
+        if (ex.getMessage().contains("user_email_key")) {
+            return createCustomDataIntegrityViolationResponse(ex, request, "This email is already taken by another user");
+        }
+        if (ex.getMessage().contains("user_phone_key")) {
+            return createCustomDataIntegrityViolationResponse(ex, request, "This phone is already taken by another user");
+        }
+        if (ex.getMessage().contains("user_login_key")) {
+            return createCustomDataIntegrityViolationResponse(ex, request, "This login is already taken by another user");
         }
         return createProblemDetailExceptionResponse(ex, HttpStatus.BAD_REQUEST, request);
     }
@@ -60,16 +66,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return createProblemDetailExceptionResponse(ex, UNAUTHORIZED, request);
     }
 
-    private ResponseEntity<Object> createCustomDataIntegrityViolationResponse(DataIntegrityViolationException ex, WebRequest request, String field, String exceptionMessage) {
-        ProblemDetail body = createProblemDetail(ex, HttpStatus.UNPROCESSABLE_ENTITY, "Invalid request content.", null, null, request);
-        Map<String, String> invalidParams = new LinkedHashMap<>();
-        invalidParams.put(field, exceptionMessage);
-        body.setProperty("invalid_params", invalidParams);
-        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
+    private ResponseEntity<Object> createCustomDataIntegrityViolationResponse(DataIntegrityViolationException ex, WebRequest request, String exceptionMessage) {
+        ProblemDetail body = createProblemDetail(ex, BAD_REQUEST, exceptionMessage, null, null, request);
+        return handleExceptionInternal(ex, body, new HttpHeaders(), BAD_REQUEST, request);
     }
 
     private ResponseEntity<?> createProblemDetailExceptionResponse(Exception ex, HttpStatusCode statusCode, WebRequest request) {
         ProblemDetail body = createProblemDetail(ex, statusCode, ex.getMessage(), null, null, request);
         return handleExceptionInternal(ex, body, new HttpHeaders(), statusCode, request);
     }
+
+
 }
