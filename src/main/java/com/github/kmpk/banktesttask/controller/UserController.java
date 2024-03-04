@@ -38,6 +38,7 @@ public class UserController {
                                        @RequestParam(value = "page", defaultValue = "0") int page,
                                        @RequestParam(value = "size", defaultValue = "10") int size,
                                        @RequestParam(value = "sort", defaultValue = "id,asc") String[] sort) {
+        log.info("Search users by full name {}, parameters: page {}, size {}, sort {}", fullName, page, size, sort);
         return service.findAllByFullNameLike(fullName, sort, size, page);
     }
 
@@ -48,6 +49,7 @@ public class UserController {
                                         @RequestParam(value = "page", defaultValue = "0") int page,
                                         @RequestParam(value = "size", defaultValue = "10") int size,
                                         @RequestParam(value = "sort", defaultValue = "id,asc") String[] sort) {
+        log.info("Search users by birthdate {}, parameters: page {}, size {}, sort {}", birthDate, page, size, sort);
         return service.findAllAfterBirthDate(birthDate, sort, size, page);
     }
 
@@ -55,6 +57,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/by-phone")
     public ResponseEntity<UserTo> findByPhone(@RequestParam("phone") @Pattern(regexp = "([0-9]{5,16})") String phone) {
+        log.info("Search user by phone {}", phone);
         return service.findByPhone(phone)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -64,6 +67,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/by-email")
     public ResponseEntity<UserTo> findByEmail(@RequestParam("email") @Email String email) {
+        log.info("Search user by email {}", email);
         return service.findByEmailIgnoreCase(email)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
