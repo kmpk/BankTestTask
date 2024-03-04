@@ -96,12 +96,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserTo> findByPhone(String phone) {
-        return Optional.empty();
+        return repository.findByPhone(phone).map(userMapper::toTo);
     }
 
     @Override
     public Optional<UserTo> findByEmailIgnoreCase(String email) {
-        return Optional.empty();
+        return repository.findByEmailIgnoreCase(email).map(userMapper::toTo);
     }
 
     @Override
