@@ -1,6 +1,6 @@
 package com.github.kmpk.banktesttask;
 
-import com.github.kmpk.banktesttask.exception.AppValidationException;
+import com.github.kmpk.banktesttask.exception.AppException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
@@ -47,10 +48,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return createProblemDetailExceptionResponse(ex, HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(AppValidationException.class)
-    public ResponseEntity<?> appValidationException(AppValidationException ex, WebRequest request) {
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<?> appValidationException(AppException ex, WebRequest request) {
         log.error("AppValidationException: {}", ex.getMessage());
-        return createProblemDetailExceptionResponse(ex, UNPROCESSABLE_ENTITY, request);
+        return createProblemDetailExceptionResponse(ex, BAD_REQUEST, request);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
