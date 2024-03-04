@@ -31,6 +31,6 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void transfer(@RequestBody @Valid TransferRequestTo request, @AuthenticationPrincipal AuthUser authUser) {
         log.info("transfer {} from {} to {}", request.amount(), authUser.id(), request.recipientId());
-        service.transfer(authUser.id(), request.recipientId(), request.amount());
+        service.transfer(authUser.id(), request.recipientId(), request.amount(), request.operationDateTime());
     }
 }

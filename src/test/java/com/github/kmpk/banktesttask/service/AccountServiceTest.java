@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -28,7 +29,7 @@ class AccountServiceTest {
 
     @Test
     void transfer() {
-        accountService.transfer(1, 2, new BigDecimal("100.00"));
+        accountService.transfer(1, 2, new BigDecimal("100.00"), LocalDateTime.now());
         Assertions.assertEquals(new BigDecimal("900.00"), accountRepository.findById(1).get().getBalance());
         Assertions.assertEquals(new BigDecimal("1100.00"), accountRepository.findById(2).get().getBalance());
     }
@@ -36,7 +37,7 @@ class AccountServiceTest {
     @Test
     void transferInsufficientFunds() {
         DataIntegrityViolationException ex = Assertions.assertThrows(DataIntegrityViolationException.class,
-                () -> accountService.transfer(1, 2, new BigDecimal("1000.01")));
+                () -> accountService.transfer(1, 2, new BigDecimal("1000.01"), LocalDateTime.now()));
         Assertions.assertTrue(ex.getMessage().contains("account_balance_check"));
     }
 
@@ -54,7 +55,13 @@ class AccountServiceTest {
                     toId = random.nextInt(1, 11);
                 }
 
-                accountService.transfer(fromId, toId, new BigDecimal("100.10"));
+                int month = random.nextInt(1, 13);
+                int day = random.nextInt(1, 29);
+                int hour = random.nextInt(24);
+                int minute = random.nextInt(60);
+
+                LocalDateTime operationDate = LocalDateTime.of(2000, month, day, hour, minute);
+                accountService.transfer(fromId, toId, new BigDecimal("100.10"), operationDate);
             }).exceptionally(ex -> {
                 if (!ex.getMessage().endsWith("[account_balance_check]")) {
                     exceptionOccured.set(true);
