@@ -14,3 +14,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres?ApplicationName=bank
     username: bankUser
     password: bankPassword
+springdoc:
+  swagger-ui:
+    path: /open-api
+token:
+  signing:
+    key: eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTcwOTU1MzE2NywiaWF0IjoxNzA5NTUzMTY3fQ.W9p0MOsNtXRP_V4BJzy_OXs2VfDE8rGHzTDFryqv9ts
