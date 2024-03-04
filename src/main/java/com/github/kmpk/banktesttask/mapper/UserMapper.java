@@ -13,5 +13,6 @@ public interface UserMapper {
     @Mapping(target = "account", expression = "java(new Account(requestTo.initialBalance(),requestTo.initialBalance()))")
     User toEntity(CreateUserRequestTo requestTo);
 
+    @Mapping(target = "balance", source = "user.account.balance")
     UserTo toTo(User user);
 }
