@@ -7,6 +7,7 @@ import com.github.kmpk.banktesttask.validation.PhoneOrEmailExistValidator;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +26,7 @@ import static com.github.kmpk.banktesttask.controller.UserManagementController.R
 @RequiredArgsConstructor
 @RequestMapping(value = REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Validated
+@Slf4j
 public class UserManagementController {
     static final String REST_URL = "/api/admin/users";
 
@@ -40,6 +42,7 @@ public class UserManagementController {
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirements
     public UserTo create(@RequestBody @Valid CreateUserRequestTo request) {
+        log.info("Creating user {}", request);
         return service.createUser(request);
     }
 }

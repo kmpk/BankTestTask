@@ -1,5 +1,6 @@
 package com.github.kmpk.banktesttask.service;
 
+import com.github.kmpk.banktesttask.exception.AppValidationException;
 import com.github.kmpk.banktesttask.mapper.UserMapper;
 import com.github.kmpk.banktesttask.model.User;
 import com.github.kmpk.banktesttask.repository.UserRepository;
@@ -45,13 +46,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void editEmail(int id, String newEmailOrNull) {
-
+        User user = repository.getReferenceById(id);
+        if (newEmailOrNull == null) {
+            if (user.getPhone() == null) {
+                throw new AppValidationException("Can't delete email while phone is not set");
+            }
+            user.setEmail(null);
+        } else {
+            Optional<Integer> userIdWithThisEmail = repository.findByEmailIgnoreCase(newEmailOrNull).map(User::getId);
+            if (userIdWithThisEmail.isPresent() && userIdWithThisEmail.get() != id) {
+                throw new AppValidationException("This email is already taken by another user");
+            }
+            user.setEmail(newEmailOrNull);
+        }
     }
 
     @Override
+    @Transactional
     public void editPhone(int id, String newPhoneOrNull) {
-
+        User user = repository.getReferenceById(id);
+        if (newPhoneOrNull == null) {
+            if (user.getEmail() == null) {
+                throw new AppValidationException("Can't delete phone while email is not set");
+            }
+            user.setPhone(null);
+        } else {
+            Optional<Integer> userIdWithThisPhone = repository.findByPhone(newPhoneOrNull).map(User::getId);
+            if (userIdWithThisPhone.isPresent() && userIdWithThisPhone.get() != id) {
+                throw new AppValidationException("This phone number is already taken by another user");
+            }
+            user.setPhone(newPhoneOrNull);
+        }
     }
 
     @Override

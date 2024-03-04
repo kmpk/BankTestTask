@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @Slf4j
@@ -42,13 +44,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         if (ex.getMessage().contains("balance_constraint")) {
             return createCustomDataIntegrityViolationResponse(ex, request, "address", "Can't perform operation: insufficient funds");
         }
-        return createProblemDetailExceptionResponse(ex, HttpStatus.UNPROCESSABLE_ENTITY, request);
+        return createProblemDetailExceptionResponse(ex, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(AppValidationException.class)
     public ResponseEntity<?> appValidationException(AppValidationException ex, WebRequest request) {
         log.error("AppValidationException: {}", ex.getMessage());
         return createProblemDetailExceptionResponse(ex, UNPROCESSABLE_ENTITY, request);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> badCredentialsException(BadCredentialsException ex, WebRequest request) {
+        log.error("BadCredentialsException: {}", ex.getMessage());
+        return createProblemDetailExceptionResponse(ex, UNAUTHORIZED, request);
     }
 
     private ResponseEntity<Object> createCustomDataIntegrityViolationResponse(DataIntegrityViolationException ex, WebRequest request, String field, String exceptionMessage) {

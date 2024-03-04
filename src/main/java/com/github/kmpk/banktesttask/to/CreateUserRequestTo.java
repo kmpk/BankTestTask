@@ -15,7 +15,7 @@ public record CreateUserRequestTo(@NotBlank @Length(min = 5)
                                   String login,
                                   @NotBlank @Length(min = 5)
                                   String password,
-                                  @Pattern(regexp = "(^$|[0-9]{5,16})")
+                                  @Pattern(regexp = "([0-9]{5,16})")
                                   String phone,
                                   @Email
                                   String email,
