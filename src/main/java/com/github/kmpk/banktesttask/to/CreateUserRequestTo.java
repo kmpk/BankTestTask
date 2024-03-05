@@ -1,6 +1,5 @@
 package com.github.kmpk.banktesttask.to;
 
-import com.github.kmpk.banktesttask.validation.HasPhoneAndEmail;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,14 +23,5 @@ public record CreateUserRequestTo(@NotBlank @Length(min = 5)
                                   @NotBlank @Length(min = 5)
                                   String fullName,
                                   @NotNull @Digits(integer = 13, fraction = 2)
-                                  BigDecimal initialBalance) implements HasPhoneAndEmail {
-    @Override
-    public String getPhone() {
-        return phone;
-    }
-
-    @Override
-    public String getEmail() {
-        return email;
-    }
+                                  BigDecimal initialBalance) {
 }

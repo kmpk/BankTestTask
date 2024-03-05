@@ -29,25 +29,24 @@ import java.time.LocalDate;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "login", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String login;
 
-    @Column(name = "password", nullable = false)
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "phone", unique = true)
+    @Column(unique = true)
     private String phone;
 
-    @Column(name = "email", unique = true)
+    @Column(unique = true)
     private String email;
 
-    @Column(name = "birth_date", nullable = false)
+    @Column(nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "full_name", nullable = false)
+    @Column(nullable = false)
     private String fullName;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false, mappedBy = "user")

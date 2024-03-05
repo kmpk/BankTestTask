@@ -18,7 +18,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
             END
             """)
     @Modifying
-    void depositInterestsForAllUsers(BigDecimal interest, BigDecimal interestFloor);
+    void depositInterestsForAllUsers(BigDecimal interest, BigDecimal interestCeiling);
 
     @Query("""
             UPDATE Account u

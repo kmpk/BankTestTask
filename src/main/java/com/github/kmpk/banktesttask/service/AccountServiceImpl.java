@@ -1,6 +1,7 @@
 package com.github.kmpk.banktesttask.service;
 
 import com.github.kmpk.banktesttask.exception.AppException;
+import com.github.kmpk.banktesttask.properties.InterestProperties;
 import com.github.kmpk.banktesttask.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +23,14 @@ import java.util.concurrent.TimeUnit;
 public class AccountServiceImpl implements AccountService {
     public static final int EXPIRATION_TIME_MINUTES = 30;
     private final AccountRepository repository;
+    private final InterestProperties properties;
     private final ConcurrentHashMap<String, LocalDateTime> operationDateTimeStorage = new ConcurrentHashMap<>();
 
     @Override
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.MINUTES) //TODO: extract
+    @Scheduled(fixedRateString = "${bank.interest.interval}", timeUnit = TimeUnit.MINUTES)
     public void interestDeposit() {
         log.info("depositing interest for all accounts");
-        repository.depositInterestsForAllUsers(new BigDecimal("1.05"), new BigDecimal("2.07")); //TODO: extract
+        repository.depositInterestsForAllUsers(properties.getRate(), properties.getCeiling());
     }
 
     @Override

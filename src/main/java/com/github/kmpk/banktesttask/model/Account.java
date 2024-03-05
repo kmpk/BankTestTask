@@ -1,6 +1,5 @@
 package com.github.kmpk.banktesttask.model;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -18,7 +17,6 @@ import java.math.BigDecimal;
 @Table(name = "account")
 public class Account {
     @Id
-    @Column(name = "id")
     private Integer id;
 
     @JoinColumn(name = "id")
@@ -26,10 +24,8 @@ public class Account {
     @MapsId
     private User user;
 
-    @Column(name = "initial_balance")
     private BigDecimal initialBalance;
 
-    @Column(name = "balance")
     private BigDecimal balance;
 
     public Account() {

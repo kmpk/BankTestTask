@@ -20,3 +20,8 @@ springdoc:
 token:
   signing:
     key: eyJhbGciOiJIUzI1NiJ9eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTcwOTU1MzE2NywiaWF0IjoxNzA5NTUzMTY3fQW9p0MOsNtXRPV4BJzyOXs2VfDE8rGHzTDFryqv9ts
+bank:
+  interest:
+    rate: "1.05"
+    interval: 1
+    ceiling: "2.07"

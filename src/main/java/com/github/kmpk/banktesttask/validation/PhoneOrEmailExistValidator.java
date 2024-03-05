@@ -1,6 +1,7 @@
 package com.github.kmpk.banktesttask.validation;
 
 
+import com.github.kmpk.banktesttask.to.CreateUserRequestTo;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
@@ -10,13 +11,13 @@ public class PhoneOrEmailExistValidator implements org.springframework.validatio
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return HasPhoneAndEmail.class.isAssignableFrom(clazz);
+        return CreateUserRequestTo.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        HasPhoneAndEmail user = ((HasPhoneAndEmail) target);
-        if (user.getEmail() == null && user.getPhone() == null) {
+        CreateUserRequestTo user = ((CreateUserRequestTo) target);
+        if (user.email() == null && user.phone() == null) {
             errors.rejectValue("email,phone", "", MESSAGE);
         }
     }
