@@ -4,6 +4,7 @@ import com.github.kmpk.banktesttask.to.CreateUserRequestTo;
 import com.github.kmpk.banktesttask.to.PageResultTo;
 import com.github.kmpk.banktesttask.to.UserTo;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.time.LocalDate;
@@ -17,11 +18,11 @@ public interface UserService extends UserDetailsService {
 
     void editPhone(int id, String newPhoneOrNull);
 
-    PageResultTo findAllAfterBirthDate(LocalDate birthDate, String[] sort, int size, int page);
-
     Optional<UserTo> findByPhone(String phone);
 
     Optional<UserTo> findByEmailIgnoreCase(String email);
 
-    PageResultTo findAllByFullNameLike(String fullName, String[] sort, int size, int page);
+    PageResultTo findAllByFullNameLike(String fullName, Pageable pageable);
+
+    PageResultTo findAllAfterBirthDate(LocalDate birthDate, Pageable pageable);
 }

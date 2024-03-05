@@ -1,4 +1,6 @@
 package com.github.kmpk.banktesttask.to;
 
-public record AuthRequestTo(String login, String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record AuthRequestTo(@NotBlank String login, @NotBlank String password) {
 }

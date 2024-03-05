@@ -10,9 +10,7 @@ import com.github.kmpk.banktesttask.to.CreateUserRequestTo;
 import com.github.kmpk.banktesttask.to.PageResultTo;
 import com.github.kmpk.banktesttask.to.UserTo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -88,10 +84,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResultTo findAllAfterBirthDate(LocalDate birthDate, String[] sort, int size, int page) {
-        List<Sort.Order> orders = parseOrders(sort);
-        Pageable pagingSort = PageRequest.of(page, size, Sort.by(orders));
-        return pageMapper.toTo(repository.findAllByBirthDateAfter(birthDate, pagingSort).map(userMapper::toTo));
+    public PageResultTo findAllAfterBirthDate(LocalDate birthDate, Pageable pageable) {
+        return pageMapper.toTo(repository.findAllByBirthDateAfter(birthDate, pageable).map(userMapper::toTo));
     }
 
     @Override
@@ -105,27 +99,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResultTo findAllByFullNameLike(String fullName, String[] sort, int size, int page) {
-        List<Sort.Order> orders = parseOrders(sort);
-        Pageable pagingSort = PageRequest.of(page, size, Sort.by(orders));
-        return pageMapper.toTo(repository.findAllByFullNameLike(fullName, pagingSort).map(userMapper::toTo));
-    }
-
-    private static List<Sort.Order> parseOrders(String[] sort) {
-        if (sort.length % 2 != 0) {
-            throw new AppException("The number of sorting parameters must be even.");
-        }
-        List<Sort.Order> orders = new ArrayList<>();
-        String currentSortField = null;
-        for (String s : sort) {
-            if (currentSortField == null) {
-                currentSortField = s;
-            } else {
-                Sort.Direction direction = s.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-                orders.add(new Sort.Order(direction, currentSortField));
-                currentSortField = null;
-            }
-        }
-        return orders;
+    public PageResultTo findAllByFullNameLike(String fullName, Pageable pageable) {
+        return pageMapper.toTo(repository.findAllByFullNameLike(fullName, pageable).map(userMapper::toTo));
     }
 }

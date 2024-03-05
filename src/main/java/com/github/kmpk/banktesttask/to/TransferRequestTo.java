@@ -8,5 +8,5 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record TransferRequestTo(int recipientId, @NotNull LocalDateTime operationDateTime,
-                                @Positive @Digits(integer = 13, fraction = 2) BigDecimal amount) {
+                                @NotNull @Positive @Digits(integer = 13, fraction = 2) BigDecimal amount) {
 }

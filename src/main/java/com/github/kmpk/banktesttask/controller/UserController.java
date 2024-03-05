@@ -3,11 +3,17 @@ package com.github.kmpk.banktesttask.controller;
 import com.github.kmpk.banktesttask.service.UserService;
 import com.github.kmpk.banktesttask.to.PageResultTo;
 import com.github.kmpk.banktesttask.to.UserTo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,46 +33,89 @@ import static com.github.kmpk.banktesttask.controller.UserController.REST_URL;
 @RequestMapping(value = REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Validated
 @Slf4j
+@Tag(name = "User Controller", description = "Controller responsible for searching users")
 public class UserController {
     static final String REST_URL = "/api/users";
     private final UserService service;
 
-    @SecurityRequirement(name = "jwt")
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/by-full-name")
-    public PageResultTo findByFullName(@RequestParam("full-name") String fullName,
-                                       @RequestParam(value = "page", defaultValue = "0") int page,
-                                       @RequestParam(value = "size", defaultValue = "10") int size,
-                                       @RequestParam(value = "sort", defaultValue = "id,asc") String[] sort) {
-        log.info("Search users by full name {}, parameters: page {}, size {}, sort {}", fullName, page, size, sort);
-        return service.findAllByFullNameLike(fullName, sort, size, page);
+    @SecurityRequirement(name = "jwt")
+    @Operation(summary = "Searches users by full name, paginates and sorts results",
+            description = "Provide a full name for searching, page parameters for result pagination, and sorting parameters (optional) for sorting")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "403"),
+            @ApiResponse(responseCode = "422")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    public PageResultTo findByFullName(@RequestParam String fullName,
+                                       @Parameter(example = """
+                                               {
+                                                 "page": 0,
+                                                 "size": 10,
+                                                 "sort": [
+                                                   "id", "desc", "phone", "asc"
+                                                 ]
+                                               }
+                                               """) Pageable pageable) {
+        log.info("Search users by full name {}, parameters: {}", fullName, pageable);
+        return service.findAllByFullNameLike(fullName, pageable);
     }
 
-    @SecurityRequirement(name = "jwt")
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/after-birth-date")
-    public PageResultTo findByBirthDate(@RequestParam("birth-date") LocalDate birthDate,
-                                        @RequestParam(value = "page", defaultValue = "0") int page,
-                                        @RequestParam(value = "size", defaultValue = "10") int size,
-                                        @RequestParam(value = "sort", defaultValue = "id,asc") String[] sort) {
-        log.info("Search users by birthdate {}, parameters: page {}, size {}, sort {}", birthDate, page, size, sort);
-        return service.findAllAfterBirthDate(birthDate, sort, size, page);
+    @SecurityRequirement(name = "jwt")
+    @Operation(summary = "Searches users born after specified date, paginates and sorts results",
+            description = "Provide a date for searching, page parameters for result pagination, and sorting parameters (optional) for sorting")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "403"),
+            @ApiResponse(responseCode = "422")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    public PageResultTo findByBirthDate(@RequestParam LocalDate birthDate,
+                                        @Parameter(example = """
+                                                {
+                                                  "page": 0,
+                                                  "size": 10,
+                                                  "sort": [
+                                                    "id", "desc", "phone", "asc"
+                                                  ]
+                                                }
+                                                """) Pageable pageable) {
+        log.info("Search users by birthdate {}, parameters: {}", birthDate, pageable);
+        return service.findAllAfterBirthDate(birthDate, pageable);
     }
 
-    @SecurityRequirement(name = "jwt")
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/by-phone")
-    public ResponseEntity<UserTo> findByPhone(@RequestParam("phone") @Pattern(regexp = "([0-9]{5,16})") String phone) {
+    @SecurityRequirement(name = "jwt")
+    @Operation(summary = "Searches for a user with specified phone",
+            description = "Provide a phone for searching")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "403"),
+            @ApiResponse(responseCode = "404"),
+            @ApiResponse(responseCode = "422")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<UserTo> findByPhone(@RequestParam @Pattern(regexp = "([0-9]{5,16})") String phone) {
         log.info("Search user by phone {}", phone);
         return service.findByPhone(phone)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @SecurityRequirement(name = "jwt")
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/by-email")
-    public ResponseEntity<UserTo> findByEmail(@RequestParam("email") @Email String email) {
+    @SecurityRequirement(name = "jwt")
+    @Operation(summary = "Searches for a user with specified email (case-insensitive)",
+            description = "Provide an email for searching")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "403"),
+            @ApiResponse(responseCode = "404"),
+            @ApiResponse(responseCode = "422")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<UserTo> findByEmail(@RequestParam @Email String email) {
         log.info("Search user by email {}", email);
         return service.findByEmailIgnoreCase(email)
                 .map(ResponseEntity::ok)
