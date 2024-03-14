@@ -110,7 +110,7 @@ public class UserController {
             description = "Provide an email for searching")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "403"),
+            @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "404"),
             @ApiResponse(responseCode = "422")
     })

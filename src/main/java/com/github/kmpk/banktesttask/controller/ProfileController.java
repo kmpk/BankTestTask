@@ -1,6 +1,5 @@
 package com.github.kmpk.banktesttask.controller;
 
-import com.github.kmpk.banktesttask.security.AuthUser;
 import com.github.kmpk.banktesttask.service.UserService;
 import com.github.kmpk.banktesttask.to.UpdateEmailRequestTo;
 import com.github.kmpk.banktesttask.to.UpdatePhoneRequestTo;
@@ -15,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,13 +39,14 @@ public class ProfileController {
             description = "Provide new email or leave as null to remove")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "403"),
+            @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "422")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody @Valid UpdateEmailRequestTo request, @AuthenticationPrincipal AuthUser authUser) {
-        log.info("update email to {} for user id={}", request.email(), authUser.id());
-        service.editEmail(authUser.id(), request.email());
+    public void update(@RequestBody @Valid UpdateEmailRequestTo request, @AuthenticationPrincipal Jwt token) {
+        int id = Integer.parseInt(token.getClaimAsString("id"));
+        log.info("update email to {} for user id={}", request.email(), id);
+        service.editEmail(id, request.email());
     }
 
     @PatchMapping(path = "/phone", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -54,12 +55,13 @@ public class ProfileController {
             description = "Provide new phone or leave as null to remove")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "403"),
+            @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "422")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody @Valid UpdatePhoneRequestTo request, @AuthenticationPrincipal AuthUser authUser) {
-        log.info("update phone to {} for user id={}", request.phone(), authUser.id());
-        service.editPhone(authUser.id(), request.phone());
+    public void update(@RequestBody @Valid UpdatePhoneRequestTo request, @AuthenticationPrincipal Jwt token) {
+        int id = Integer.parseInt(token.getClaimAsString("id"));
+        log.info("update phone to {} for user id={}", request.phone(), id);
+        service.editPhone(id, request.phone());
     }
 }

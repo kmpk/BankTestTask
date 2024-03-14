@@ -16,22 +16,27 @@ import org.springframework.context.annotation.Configuration;
         bearerFormat = "JWT",
         scheme = "bearer"
 )
+@SecurityScheme(
+        name = "basic",
+        type = SecuritySchemeType.HTTP,
+        scheme = "basic"
+)
 @OpenAPIDefinition(
         info = @Info(
                 title = "Bank test task REST API documentation",
                 version = "0.0.1-SNAPSHOT",
                 description = """
-                        
+                                                
                         """
         ),
-        security = @SecurityRequirement(name = "jwt")
+        security = {@SecurityRequirement(name = "jwt"), @SecurityRequirement(name = "basic")}
 )
 public class OpenApiConfig {
     @Bean
     public GroupedOpenApi api() {
         return GroupedOpenApi.builder()
                 .group("REST API")
-                .pathsToMatch("/api/**","/signIn")
+                .pathsToMatch("/api/**", "/token")
                 .build();
     }
 }

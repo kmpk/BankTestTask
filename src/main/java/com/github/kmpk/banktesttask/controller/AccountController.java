@@ -1,6 +1,5 @@
 package com.github.kmpk.banktesttask.controller;
 
-import com.github.kmpk.banktesttask.security.AuthUser;
 import com.github.kmpk.banktesttask.service.AccountService;
 import com.github.kmpk.banktesttask.to.TransferRequestTo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,12 +38,13 @@ public class AccountController {
             description = "Provide a recipient id, date time to prevent repeatable operation and amount to transfer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "403"),
+            @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "422")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void transfer(@RequestBody @Valid TransferRequestTo request, @AuthenticationPrincipal AuthUser authUser) {
-        log.info("transfer {} from {} to {}", request.amount(), authUser.id(), request.recipientId());
-        service.transfer(authUser.id(), request.recipientId(), request.amount(), request.operationDateTime());
+    public void transfer(@RequestBody @Valid TransferRequestTo request, @AuthenticationPrincipal Jwt token) {
+        int id = Integer.parseInt(token.getClaimAsString("id"));
+        log.info("transfer {} from {} to {}", request.amount(), id, request.recipientId());
+        service.transfer(id, request.recipientId(), request.amount(), request.operationDateTime());
     }
 }
